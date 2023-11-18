@@ -1,18 +1,22 @@
 const express = require('express');
-const User = require('../Models/User');
 const router = express.Router()
-const bcrypt = require("bcrypt")
 const { check, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt")
+
+const User = require('../Models/User');
+const JWT_SECRET = 'Sh$124hshs@';
+const fetchuser = require('../middleware/fetchuser');
 
 // middleware that is specific to this router
-const validatorArr = [
+const signUpValidatorArr = [
     check('name').trim().escape().notEmpty().withMessage('User name can not be empty!').bail().isLength({ min: 3 }).withMessage('Minimum 3 characters required!'),
     check('emailID').trim().normalizeEmail().notEmpty().withMessage('Invalid email address!').bail().isEmail().withMessage('Invalid email address!'),
     check('password').trim().escape().notEmpty().withMessage('Password can not be empty!').bail().isLength({ min: 8 }).withMessage('Minimum 8 characters required!')
 ]
 
 // define the home page route
-router.post('/signup', validatorArr, async (req, res) => {
+router.post('/signup', signUpValidatorArr, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
@@ -23,13 +27,19 @@ router.post('/signup', validatorArr, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     // Create a new user object
     const newUser = new User({ name, emailID, password });
-    newUser.password = hashedPassword;    
+    newUser.password = hashedPassword;
 
     // Save the user to the database
     newUser.save()
         .then((savedUser) => {
+            const data = {
+                user: {
+                    id: newUser.id
+                }
+            };
+            const authtoken = jwt.sign(data, JWT_SECRET)
             // User created successfully
-            return res.status(201).json({ message: 'User created successfully!' });
+            return res.status(201).json({ message: 'User created successfully!'});
         })
         .catch((err) => {
             if (err.code === 11000) {
@@ -41,6 +51,60 @@ router.post('/signup', validatorArr, async (req, res) => {
             }
         });
 
+})
+
+const loginValidatorArr = [
+    check('name').trim().escape().notEmpty().withMessage('User name can not be empty!').bail().isLength({ min: 3 }).withMessage('Minimum 3 characters required!'),
+    check('emailID').trim().normalizeEmail().notEmpty().withMessage('Invalid email address!').bail().isEmail().withMessage('Invalid email address!')
+]
+
+router.post('/login', loginValidatorArr, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+    const { emailID, password } = req.body;
+
+    try {
+        const user = await User.findOne({ emailID });
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Compare the provided password with the hashed password in the database
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const data = {
+            user: {
+                id: user.id
+            }
+        };
+        const authtoken = jwt.sign(data, JWT_SECRET)
+
+        // Passwords match, login successful
+        return res.json({ authtoken });
+    }
+    catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.get('/getUser', fetchuser, async (req, res) => {
+
+    try {
+        const userid = req.userid;
+        const user = await User.findById(userid).select("-password");
+        return res.json(user);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
 })
 
 
