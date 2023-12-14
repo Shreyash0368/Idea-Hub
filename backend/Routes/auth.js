@@ -39,7 +39,7 @@ router.post('/signup', signUpValidatorArr, async (req, res) => {
             };
             const authtoken = jwt.sign(data, JWT_SECRET)
             // User created successfully
-            return res.status(201).json({ message: 'User created successfully!'});
+            return res.status(201).json({ authtoken });
         })
         .catch((err) => {
             if (err.code === 11000) {
@@ -54,7 +54,7 @@ router.post('/signup', signUpValidatorArr, async (req, res) => {
 })
 
 const loginValidatorArr = [
-    check('name').trim().escape().notEmpty().withMessage('User name can not be empty!').bail().isLength({ min: 3 }).withMessage('Minimum 3 characters required!'),
+    check('password').trim().escape().notEmpty().withMessage('Invalid Password!').bail().isLength({ min: 3 }).withMessage('Minimum 3 characters required!'),
     check('emailID').trim().normalizeEmail().notEmpty().withMessage('Invalid email address!').bail().isEmail().withMessage('Invalid email address!')
 ]
 
@@ -96,7 +96,6 @@ router.post('/login', loginValidatorArr, async (req, res) => {
 });
 
 router.get('/getUser', fetchuser, async (req, res) => {
-
     try {
         const userid = req.userid;
         const user = await User.findById(userid).select("-password");
