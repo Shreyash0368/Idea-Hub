@@ -7,12 +7,12 @@ const fetchuser = (req, res, next) => {
     const token = req.header('Authorization');
     
     if (!token) {
-        return res.status(401).json({error: "Enter a valid authorization token!"});
+        return res.status(401).json({success: false, error: "Enter a valid authorization token!"});
     }
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(401).json({error: "Enter a valid authorization token!"});
+            return res.status(401).json({success: false, error: "Enter a valid authorization token!"});
         }
 
         const userid = decoded.user.id;

@@ -17,9 +17,10 @@ const signUpValidatorArr = [
 
 // define the home page route
 router.post('/signup', signUpValidatorArr, async (req, res) => {
+    let success = false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res.status(422).json({success, errors: errors.array() });
     }
     const { name, emailID, password } = req.body;
 
@@ -39,15 +40,16 @@ router.post('/signup', signUpValidatorArr, async (req, res) => {
             };
             const authtoken = jwt.sign(data, JWT_SECRET)
             // User created successfully
-            return res.status(201).json({ authtoken });
+            success = true;
+            return res.status(201).json({success, authtoken });
         })
         .catch((err) => {
             if (err.code === 11000) {
                 // Email address already exists
-                return res.status(400).json({ message: 'Email address already exists!' });
+                return res.status(400).json({success, message: 'Email address already exists!' });
             } else {
                 // Other error
-                return res.status(500).json({ message: 'An error occurred while creating the user.', error: err });
+                return res.status(500).json({success, message: 'An error occurred while creating the user.', error: err });
             }
         });
 
@@ -59,9 +61,10 @@ const loginValidatorArr = [
 ]
 
 router.post('/login', loginValidatorArr, async (req, res) => {
+    let success = false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res.status(422).json({success, errors: errors.array() });
     }
     const { emailID, password } = req.body;
 
@@ -70,13 +73,13 @@ router.post('/login', loginValidatorArr, async (req, res) => {
 
         // Check if the user exists
         if (!user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({success, error: 'Invalid credentials' });
         }
 
         // Compare the provided password with the hashed password in the database
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({success, error: 'Invalid credentials' });
         }
 
         const data = {
@@ -87,22 +90,24 @@ router.post('/login', loginValidatorArr, async (req, res) => {
         const authtoken = jwt.sign(data, JWT_SECRET)
 
         // Passwords match, login successful
-        return res.json({ authtoken });
+        success = true;
+        return res.json({success, authtoken});
     }
     catch (error) {
         console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({success, error: 'Internal Server Error' });
     }
 });
 
 router.get('/getUser', fetchuser, async (req, res) => {
+    let success = false;
     try {
         const userid = req.userid;
         const user = await User.findById(userid).select("-password");
-        return res.json(user);
+        success = true;
+        return res.json({success, user});
     } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({success, error: 'Internal Server Error' });
     }
 })
 

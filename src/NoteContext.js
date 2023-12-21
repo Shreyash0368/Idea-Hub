@@ -23,7 +23,7 @@ const NoteProvider = (props) => {
 
       // updating client side
       const data = await response.json();
-      setNotes(data);
+      setNotes(data.notes);
     } catch (error) {
       console.error("Error adding note:", error.message);
     }
@@ -54,7 +54,7 @@ const NoteProvider = (props) => {
 
       // updating client side
       const note = await response.json();
-      setNotes((notes) => [...notes, note]);
+      setNotes((notes) => [...notes, note.savedNote]);
     } catch (error) {
       console.error("Error adding note:", error.message);
     }
@@ -90,35 +90,6 @@ const NoteProvider = (props) => {
   const editNote = async (id, updatedTitle, updatedTag, updatedDescription) => {   
     // TODO: add functionality to fetch new data either by creating a new window or from existing form
     
-    const noteIndex = notes.findIndex((note) => note._id === id);
-
-    if (noteIndex !== -1) {
-      // Create a new array with the updated note
-      const updatedNotes = [...notes];
-  
-      // Spread the existing note's properties
-      const existingNote = { ...updatedNotes[noteIndex] };
-  
-      // Update fields with provided values or use existing values if missing
-      updatedTitle = updatedTitle || existingNote.title;
-      updatedTag = updatedTag || existingNote.tag;
-      updatedDescription = updatedDescription || existingNote.description;
-  
-      // Update the note with the new or existing values
-      updatedNotes[noteIndex] = {
-        ...existingNote,
-        title: updatedTitle,
-        tag: updatedTag,
-        description: updatedDescription,
-      };
-  
-      // Set the state with the updated array
-      setNotes(updatedNotes);
-    } else {
-      console.error(`Note with id ${id} not found.`);
-    }
-
-
     try {
       const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
         method: "PUT",
@@ -127,15 +98,25 @@ const NoteProvider = (props) => {
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU1NzQ0NTVkMTZlYzczNzNlZjBhZDU1In0sImlhdCI6MTcwMDIxNzk0MX0.sKPDU0_npUNVrMYxvWRSoPWNtWaB1HoEMt816lBq8gY",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({'title': updatedTitle, 'tag': updatedTag, 'description': updatedDescription})
+        body: JSON.stringify({
+          title: updatedTitle,
+          tag: updatedTag,
+          description: updatedDescription,
+        }),
       });
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
 
-      const res = await response.json();
-      console.log(res);
+      const resp = await response.json();
+      const note = resp.note;
+
+      const noteIndex = notes.findIndex((note) => note._id === id);
+      const updatedNotes = [...notes];
+      updatedNotes.splice(noteIndex, 1, note);
+      setNotes(updatedNotes);
+
     } catch (error) {
       console.error("Error adding note:", error.message);
     }
