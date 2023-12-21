@@ -2,6 +2,8 @@ import React from 'react'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import {
     BrowserRouter as Router,    
     NavLink
@@ -18,6 +20,14 @@ export default function NavbarComp() {
                         <Nav className="me-auto">
                             <Nav.Link as={NavLink} to="/" className='nav-link'>Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/about" className='nav-link'>About</Nav.Link>                                                      
+                        </Nav>
+                        <Nav className='justify-content-end '>   
+                            <Nav.Link as={NavLink} to="/login" className='nav-link'>
+                                <Button>Login</Button>
+                            </Nav.Link>                         
+                            <Nav.Link as={NavLink} to="/signup" className='nav-link'>
+                                <Button>Signup</Button>
+                            </Nav.Link>                                                  
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
