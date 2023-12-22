@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-import { useNoteContext } from '../NoteContext';
+import { useNoteContext } from '../context/NoteContext';
 
 export default function AddNote() {
     const { addNote } = useNoteContext();
@@ -22,10 +22,18 @@ export default function AddNote() {
         setTag(e.target.value);
     }
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        addNote(title, tag, description);
+        setTitle("");
+        setDescription("");
+        setTag("");
+    }
+
     return (
         <div className="container my-3">
             <h2>Create A New Note</h2>
-            <Form onSubmit={(e) => { e.preventDefault() }}>
+            <Form validated onSubmit={(e) => { handleSubmit(e) }}>
                 <Form.Group className="mb-3" controlId="formBasicTitle">
                     <Form.Label>Title</Form.Label>
                     <Form.Control
@@ -33,6 +41,8 @@ export default function AddNote() {
                         placeholder="HW/Grocceries/.."
                         value={title}
                         onChange={handleTitleChange}
+                        required
+                        minLength={5}
                     />
                 </Form.Group>
 
@@ -52,9 +62,11 @@ export default function AddNote() {
                         aria-label="With textarea"
                         value={description}
                         onChange={handleDescriptionChange} 
+                        required
+                        minLength={10}
                     />
                 </InputGroup>
-                <Button className='my-2' variant="primary" type="submit" onClick={() => addNote(title, tag, description)}>
+                <Button className='my-2' variant="primary" type="submit">
                     Submit
                 </Button>
             </Form>

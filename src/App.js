@@ -7,7 +7,7 @@ import {
 import NavbarComp from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
-import { NoteProvider } from './NoteContext';
+import { NoteProvider } from './context/NoteContext';
 import Login from './components/Login';
 import Signup from './components/Signup';
 function App() {

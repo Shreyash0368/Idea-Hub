@@ -73,13 +73,13 @@ router.post('/login', loginValidatorArr, async (req, res) => {
 
         // Check if the user exists
         if (!user) {
-            return res.status(401).json({success, error: 'Invalid credentials' });
+            return res.status(401).json({success, error: 'Invalid Credentials' });
         }
 
         // Compare the provided password with the hashed password in the database
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({success, error: 'Invalid credentials' });
+            return res.status(401).json({success, error: 'Invalid Credentials' });
         }
 
         const data = {
