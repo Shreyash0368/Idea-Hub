@@ -1,6 +1,6 @@
 import React from 'react'
 import Card from 'react-bootstrap/Card';
-import { useNoteContext } from '../NoteContext';
+import { useNoteContext } from '../context/NoteContext';
 
 
 export default function NoteItem({note, onEditNote}) {

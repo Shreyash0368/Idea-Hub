@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react'
-import { useNoteContext } from '../NoteContext';
+import { useNoteContext } from '../context/NoteContext';
 import NoteItem from './NoteItem';
 import EditModal from './EditModal';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { useNavigate } from 'react-router-dom';
 
 export default function NotesDisplay() {
+    const navigate = useNavigate();
     const { notes, getAllNotes, editNote} = useNoteContext()      
     const [show, setShow] = useState(false)
     
@@ -25,8 +27,13 @@ export default function NotesDisplay() {
         setShow(false);
     }
     
-    useEffect(() => {     
-        getAllNotes();      
+    useEffect(() => {  
+        if (localStorage.getItem('authToken')) {
+            getAllNotes();      
+        }   
+        else {
+            navigate('/login')
+        }
     }, [])
       
     return (
