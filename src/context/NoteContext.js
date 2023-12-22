@@ -12,8 +12,7 @@ const NoteProvider = (props) => {
       const response = await fetch(`${host}/api/notes/fetchall`, {
         method: "GET",
         headers: {
-          "Authorization":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU1NzQ0NTVkMTZlYzczNzNlZjBhZDU1In0sImlhdCI6MTcwMDIxNzk0MX0.sKPDU0_npUNVrMYxvWRSoPWNtWaB1HoEMt816lBq8gY",
+          "Authorization": localStorage.getItem('authToken'),
         }
       });
 
@@ -30,20 +29,17 @@ const NoteProvider = (props) => {
   };
 
   const addNote = async (title, tag, description) => {
-    // console.log({ 'title': title, 'tag': tag, 'description': description });
-
     // sending data to backend using fetch api
     try {
       const response = await fetch(`${host}/api/notes/createnote`, {
         method: "POST",
         headers: {
-          "Authorization":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU1NzQ0NTVkMTZlYzczNzNlZjBhZDU1In0sImlhdCI6MTcwMDIxNzk0MX0.sKPDU0_npUNVrMYxvWRSoPWNtWaB1HoEMt816lBq8gY",
+          "Authorization": localStorage.getItem('authToken'),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: title,
-          tag: tag,
+          tag: tag || 'General',
           description: description,
         }),
       });
@@ -65,8 +61,7 @@ const NoteProvider = (props) => {
       const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
         method: "DELETE",
         headers: {
-          "Authorization":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU1NzQ0NTVkMTZlYzczNzNlZjBhZDU1In0sImlhdCI6MTcwMDIxNzk0MX0.sKPDU0_npUNVrMYxvWRSoPWNtWaB1HoEMt816lBq8gY",
+          "Authorization": localStorage.getItem('authToken'),
           "Content-Type": "application/json",
         }
       });
@@ -76,7 +71,6 @@ const NoteProvider = (props) => {
       }
 
       const res = await response.json();
-      console.log(res);
     } catch (error) {
       console.error("Error adding note:", error.message);
     }
@@ -94,8 +88,7 @@ const NoteProvider = (props) => {
       const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
         method: "PUT",
         headers: {
-          "Authorization":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU1NzQ0NTVkMTZlYzczNzNlZjBhZDU1In0sImlhdCI6MTcwMDIxNzk0MX0.sKPDU0_npUNVrMYxvWRSoPWNtWaB1HoEMt816lBq8gY",
+          "Authorization": localStorage.getItem('authToken'),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
