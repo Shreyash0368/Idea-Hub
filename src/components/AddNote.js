@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
-
+import { AlertsContext } from "../context/AlertsContext";
 import { useNoteContext } from '../context/NoteContext';
 
 export default function AddNote() {
     const { addNote } = useNoteContext();
+    const {addAlert} = useContext(AlertsContext);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -28,6 +29,7 @@ export default function AddNote() {
         setTitle("");
         setDescription("");
         setTag("");
+        addAlert('Note Added!');
     }
 
     return (

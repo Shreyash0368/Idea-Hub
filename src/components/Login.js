@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/esm/Container";
+import { AlertsContext } from "../context/AlertsContext";
 
-export default function Login() {
+export default function Login() {  
   const navigate = useNavigate();
+  const {addAlert} = useContext(AlertsContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +23,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_API_PATH}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,15 +37,15 @@ export default function Login() {
       const json = await response.json();
       if (json.success) {       
         localStorage.setItem('authToken', json.authtoken);
-        navigate('/');
+        addAlert('Logged In Successfully!!', 'success');
+        navigate('/mynotes');
       }
       else {
-        alert('invalid credential');
+        addAlert('Invalid Credentials!!', 'danger');
       }
 
     } catch (error) {
       console.error("Error:", error.message);
-
     }
   };
 

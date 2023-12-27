@@ -1,11 +1,13 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { useNavigate } from 'react-router-dom';
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/esm/Container";
+import { AlertsContext } from "../context/AlertsContext";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const {addAlert} = useContext(AlertsContext);
 
   const [userName, setUserName] = useState("")
   const [email, setEmail] = useState("");
@@ -29,12 +31,12 @@ export default function Signup() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      //TODO: add alert
+      addAlert('Passwords Do Not Match!!', 'warning');
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_API_PATH}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +51,8 @@ export default function Signup() {
       const json = await response.json();
       if (json.success) {
         localStorage.setItem('authToken', json.authtoken);
-        navigate('/');
+        addAlert('SignedUp Successfully!!', 'success');
+        navigate('/mynotes');
       }
       else {
         alert('invalid credential');
