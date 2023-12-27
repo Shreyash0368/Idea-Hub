@@ -1,0 +1,32 @@
+.hero-section {
+    background-color: #f0f0f0; /* Adjust background color as desired */
+    height: 230px; /* Adjust height as needed */
+    text-align: center;
+    color: #333; /* Adjust text color as desired */
+    display: flex; /* Center content vertically */
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-title {
+    font-size: 4vw; /* Proportional font size based on viewport width */
+    margin-bottom: 20px;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5vw; /* Proportional font size */
+  }
+  
+  .feature-card {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .benefits-section {
+    margin-bottom: 30px;
+  }
+  
+  .footer {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+  }
